@@ -1,3 +1,5 @@
+import path from 'path';
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     srcDir: 'src',
@@ -45,5 +47,13 @@ export default defineNuxtConfig({
     },
     tailwindcss: {
         exposeConfig: true,
+    },
+    content: {
+        sources: {
+            content: {
+                driver: 'fs',
+                base: path.resolve(__dirname, 'content'),
+            },
+        },
     },
 });
