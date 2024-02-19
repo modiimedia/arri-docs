@@ -48,7 +48,11 @@ export default defineNuxtConfig({
     tailwindcss: {
         exposeConfig: true,
     },
+
     content: {
+        highlight: {
+            langs: ['typescript', 'dart', 'rust', 'kotlin', 'javascript'],
+        },
         sources: {
             content: {
                 driver: 'fs',

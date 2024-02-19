@@ -28,7 +28,7 @@ hero:
 features:
     title: 'All-in-one docs template'
     links:
-        - label: 'Explore Nuxt UI Pro'
+        - label: 'Explore Arri RPC'
           icon: 'i-simple-icons-nuxtdotjs'
           trailingIcon: 'i-heroicons-arrow-right-20-solid'
           color: 'gray'
