@@ -2,9 +2,9 @@ title: 'Arri RPC'
 description: 'Effortlessly type-safe APIs'
 navigation: false
 hero:
-    title: Type-Safe APIs in Any Language
-    description: 'Create your documentation in seconds with this template!'
-    orientation: horizontal
+    title: Type-Safe APIs in any Language
+    description: Build your API and never think about serialization again
+    orientation: vertical
     # headline:
     #     label: Made with Nuxt UI Pro
     #     to: https://ui.nuxt.com/pro
@@ -15,11 +15,11 @@ hero:
           trailing: true
           to: '/getting-started'
           size: lg
-        - label: Use this template
+        - label: Star us on Github
           icon: i-simple-icons-github
           size: lg
           color: gray
-          to: https://github.com/nuxt-ui-pro/docs
+          to: https://github.com/modiimedia/arri
           target: _blank
     code: |
         ```bash [Terminal]
