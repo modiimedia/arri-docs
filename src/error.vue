@@ -2,8 +2,8 @@
 import type { NuxtError } from '#app';
 import Header from '~/components/Header.vue';
 
-const _props = defineProps({
-    error: Object as () => NuxtError,
+const _props = withDefaults(defineProps<{ error?: NuxtError }>(), {
+    error: () => createError({ status: 200 }),
 });
 
 const _handleError = () => clearError({ redirect: '/' });

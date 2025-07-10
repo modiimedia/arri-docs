@@ -7,7 +7,7 @@ defineProps<{ to: string; isActive?: boolean }>();
 <template>
     <NuxtLink
         :to="to"
-        class="px-4 inline-flex dark:hover:text-gray-300 dark:text-white hover:text-gray-700 text-black"
+        class="inline-flex px-4 text-black hover:text-gray-700 dark:text-white dark:hover:text-gray-300"
     >
         <div class="relative">
             <div class="relative">
@@ -15,7 +15,7 @@ defineProps<{ to: string; isActive?: boolean }>();
             </div>
             <div
                 v-if="isActive"
-                class="absolute z-0 bottom-0 left-0 right-0 h-[4px] bg-yellow-500"
+                class="absolute bottom-0 left-0 right-0 z-0 h-[4px] bg-yellow-500"
             />
         </div>
     </NuxtLink>

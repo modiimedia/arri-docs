@@ -6,12 +6,12 @@ const route = useRoute();
 
 <template>
     <div>
-        <div class="container py-4 px-4 flex justify-between">
+        <div class="container flex justify-between px-4 py-4">
             <NuxtLink to="/" class="inline-flex text-3xl">
                 Arri
-                <span class="text-yellow-500 font-bold">[</span>
+                <span class="font-bold text-yellow-500">[</span>
                 RPC
-                <span class="text-yellow-300 bold-bold">]</span>
+                <span class="font-bold text-yellow-500">]</span>
             </NuxtLink>
             <div class="flex">
                 <HeaderLink to="/" :is-active="route.path === '/'">
