@@ -23,11 +23,46 @@ export default defineNuxtConfig({
             ],
         },
     },
+    content: {
+        build: {
+            markdown: {
+                highlight: {
+                    langs: [
+                        'javascript',
+                        'typescript',
+                        'swift',
+                        'rust',
+                        'go',
+                        'kotlin',
+                        'dart',
+                        'python',
+                    ],
+                },
+            },
+        },
+    },
     components: false,
     modules: [
         '@nuxt/content',
         '@nuxt/eslint',
         '@nuxt/image',
         '@nuxtjs/tailwindcss',
+        'nuxt-shiki',
     ],
+    shiki: {
+        defaultTheme: 'one-dark-pro',
+        bundledThemes: ['one-dark-pro', 'one-light'],
+        bundledLangs: [
+            'go',
+            'typescript',
+            'javascript',
+            'rust',
+            'dart',
+            'html',
+            'swift',
+            'kotlin',
+            'bash',
+            'sh',
+        ],
+    },
 });

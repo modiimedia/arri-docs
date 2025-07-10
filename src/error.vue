@@ -15,6 +15,7 @@ const _handleError = () => clearError({ redirect: '/' });
         <section class="py-20">
             <div class="container px-4">
                 <h1 class="text-6xl">Error {{ error?.statusCode }}</h1>
+                <div>{{ error.message }}</div>
             </div>
         </section>
     </div>

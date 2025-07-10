@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import Header from '~/components/Header.vue';
+import SidebarSection from '~/components/SidebarSection.vue';
+import SidebarSectionLink from '~/components/SidebarSectionLink.vue';
 
 const route = useRoute();
 const { data: page } = await useAsyncData(route.path, async () => {
@@ -11,12 +13,45 @@ const { data: page } = await useAsyncData(route.path, async () => {
 
 <template>
     <div>
-        <Header />
-        <section class="py-20">
-            <div class="container px-4">
-                {{ page?.title }}
-            </div>
-        </section>
+        <Header class="border-gray-200 dark:border-gray-700" />
+        <div class="flex">
+            <aside
+                class="w-[275px] overflow-y-auto border-r border-gray-200 text-sm text-gray-800 dark:border-gray-800 dark:text-gray-300"
+            >
+                <SidebarSection :title="'Getting started'">
+                    <SidebarSectionLink>Intro to Arri RPC</SidebarSectionLink>
+                    <SidebarSectionLink>Installation</SidebarSectionLink>
+                    <SidebarSectionLink>Core Concepts</SidebarSectionLink>
+                </SidebarSection>
+
+                <SidebarSection :title="'Server Languages'">
+                    <SidebarSectionLink>Go</SidebarSectionLink>
+                    <SidebarSectionLink>Typescript</SidebarSectionLink>
+                    <SidebarSectionLink>Bring Your Own</SidebarSectionLink>
+                </SidebarSection>
+                <SidebarSection :title="'Client Languages'">
+                    <SidebarSectionLink>Dart</SidebarSectionLink>
+                    <SidebarSectionLink>Go</SidebarSectionLink>
+                    <SidebarSectionLink>Rust</SidebarSectionLink>
+                    <SidebarSectionLink>Swift</SidebarSectionLink>
+                    <SidebarSectionLink>Typescript</SidebarSectionLink>
+                    <SidebarSectionLink>Bring Your Own</SidebarSectionLink>
+                </SidebarSection>
+                <SidebarSection :title="'Specifications'">
+                    <SidebarSectionLink
+                        >Arri App Definition (AAD)</SidebarSectionLink
+                    >
+                    <SidebarSectionLink
+                        >Arri Type Definition (ATD)</SidebarSectionLink
+                    >
+                </SidebarSection>
+            </aside>
+            <main class="flex-grow py-10">
+                <div class="container max-w-4xl px-4">
+                    {{ page?.title }}
+                </div>
+            </main>
+        </div>
     </div>
 </template>
 

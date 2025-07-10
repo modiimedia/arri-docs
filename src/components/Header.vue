@@ -6,14 +6,20 @@ const route = useRoute();
 
 <template>
     <div>
-        <div class="container flex justify-between px-4 py-4">
+        <div class="flex justify-between px-4 py-4">
             <NuxtLink to="/" class="inline-flex text-3xl">
                 Arri
                 <span class="font-bold text-yellow-500">[</span>
                 RPC
                 <span class="font-bold text-yellow-500">]</span>
             </NuxtLink>
-            <div class="flex">
+
+            <div class="flex items-center">
+                <button
+                    class="mr-4 rounded-full border border-gray-200 bg-gray-100 px-2 py-1 text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-800"
+                >
+                    Ctrl K
+                </button>
                 <HeaderLink to="/" :is-active="route.path === '/'">
                     home
                 </HeaderLink>
@@ -29,12 +35,12 @@ const route = useRoute();
                 >
                     about
                 </HeaderLink>
-                <HeaderLink
+                <!-- <HeaderLink
                     to="/support"
                     :is-active="route.path.startsWith('/support')"
                 >
                     support
-                </HeaderLink>
+                </HeaderLink> -->
             </div>
         </div>
     </div>

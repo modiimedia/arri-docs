@@ -1,5 +1,85 @@
 <script setup lang="ts">
+import CodeBlock from '~/components/CodeBlock.vue';
 import Header from '~/components/Header.vue';
+
+const serverCodeOptions = ['go', 'typescript'] as const;
+
+const serverCode: Record<(typeof serverCodeOptions)[number], string> = {
+    go: `func main() {
+    app := arri.NewApp[any]()
+    arri.Rpc(&app, SayHello, arri.RpcOptions{})
+    app.Start()
+}
+
+type SayHelloParams struct {
+    Name string
+}
+
+type SayHelloResponse struct {
+    Message string
+}
+
+func SayHello(
+    params SayHelloParams,
+    req arri.Request[any],
+) (SayHelloResponse, arri.RpcError) {
+    return SayHelloResponse{
+        Message: “hello “ + params.Name
+    }, nil
+}`,
+    typescript: `import { a } from '@arrirpc/schema';
+import { ArriApp, defineRpc } from '@arrirpc/server';
+
+const app = new ArriApp();
+
+app.rpc('sayHello', defineRpc({
+    params: a.object('SayHelloParams', {
+        name: a.string(),
+    }),
+    response: a.object('SayHelloResponse', {
+        message: a.string(),
+    }),
+    handler({ params }) {
+        return {
+            message: \`hello \${params.name}\`,
+        };
+    }
+}));
+
+export default app;`,
+};
+const selectedServer = ref<(typeof serverCodeOptions)[number]>('go');
+
+const clientCodeOptions = [
+    'typescript',
+    'dart',
+    'kotlin',
+    'swift',
+    'rust',
+    'CURL',
+] as const;
+const clientCode: Record<(typeof clientCodeOptions)[number], string> = {
+    typescript: `const client = new Client({
+    baseUrl: 'https://example.com'
+});
+const result = await client
+    .sayHello({ name: 'John Doe' });
+console.log(result);`,
+    dart: `final client = Client(
+    baseUrl: "https://example.com",
+);
+final result = await client.sayHello(
+    SayHelloParams(name: "John Doe"),
+);
+print(result);`,
+    kotlin: '',
+    swift: '',
+    rust: '',
+    CURL: `curl -X POST https://example.com/say-hello \\
+  --data '{"name":"John Doe"}'`,
+};
+
+const selectedClient = ref<(typeof clientCodeOptions)[number]>('typescript');
 </script>
 
 <template>
@@ -115,73 +195,60 @@ import Header from '~/components/Header.vue';
                     </p>
                 </div>
 
-                <div class="flex pt-10">
-                    <div class="flex-grow">
-                        <h3 class="pb-4 text-2xl">Server</h3>
-                        <div
-                            class="rounded border border-gray-200 bg-gray-100 p-4 dark:border-gray-700 dark:bg-gray-800"
-                        >
+                <div class="flex flex-col pt-10 lg:flex-row">
+                    <div class="pb-4 lg:w-1/2 lg:pb-0 lg:pr-4">
+                        <div class="flex justify-between">
+                            <h3 class="pb-4 pr-4 text-2xl">Server</h3>
                             <select
                                 id=""
+                                v-model="selectedServer"
                                 name=""
                                 class="mb-4 rounded border border-gray-200 bg-gray-100 px-4 py-2 dark:border-gray-700 dark:bg-gray-800"
                             >
                                 <option value="go">go</option>
                                 <option value="typescript">typescript</option>
                             </select>
-                            <pre>
-func main() {
- app := arri.NewApp[any]()
- arri.Rpc(&app, SayHello, arri.RpcOptions{})
- app.Start()
-}
-
-type SayHelloParams struct {
-  Name string
-}
-
-type SayHelloResponse struct {
-  Message string
-}
-
-func SayHello(
-  params SayHelloParams,
-  req arri.Request[any],
-) (SayHelloResponse, arri.RpcError) {
-  return SayHelloResponse{
-    Message: “hello “ + params.Name
-  }, nil
-}
-</pre
-                            >
                         </div>
+
+                        <CodeBlock
+                            v-for="val in serverCodeOptions"
+                            :key="val"
+                            :lang="val"
+                            :code="serverCode[val]"
+                            :class="{
+                                hidden: val !== selectedServer,
+                            }"
+                        />
                     </div>
 
-                    <div class="w-8" />
-                    <div class="h-full">
-                        <h3 class="pb-4 text-2xl">Client</h3>
-                        <div
-                            class="rounded border border-gray-200 bg-gray-100 p-4 dark:border-gray-700 dark:bg-gray-800"
-                        >
+                    <div class="h-full pt-4 lg:w-1/2 lg:pl-4 lg:pt-0">
+                        <div class="flex justify-between">
+                            <h3 class="pb-4 pr-4 text-2xl">Client</h3>
                             <select
                                 id=""
+                                v-model="selectedClient"
                                 name=""
                                 class="mb-4 rounded border border-gray-200 bg-gray-100 px-4 py-2 dark:border-gray-700 dark:bg-gray-800"
                             >
-                                <option value="typescript">typescript</option>
+                                <option
+                                    v-for="option in clientCodeOptions"
+                                    :key="`client_${option}`"
+                                    :value="option"
+                                >
+                                    {{ option }}
+                                </option>
                             </select>
-                            <pre>
-const client = new Client();
-
-const result = await client
-    .sayHello({
-        name: “John Doe”
-    });
-
-console.log(result) // hello John Doe
-</pre
-                            >
                         </div>
+
+                        <CodeBlock
+                            v-for="val in clientCodeOptions"
+                            :key="`client_code_${val}`"
+                            :code="clientCode[val] ?? ''"
+                            :lang="val === 'CURL' ? 'sh' : val"
+                            :class="{
+                                hidden: val !== selectedClient,
+                            }"
+                        />
                     </div>
                 </div>
             </div>
