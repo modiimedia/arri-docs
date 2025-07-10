@@ -23,6 +23,7 @@ export default defineNuxtConfig({
             ],
         },
     },
+    components: false,
     modules: [
         '@nuxt/content',
         '@nuxt/eslint',
