@@ -1,34 +1,10 @@
 <script setup lang="ts">
-const route = useRoute();
+import Header from '~/components/Header.vue';
 </script>
 
 <template>
     <div>
-        <div class="container py-4 px-4 flex justify-between">
-            <div class="inline-flex text-3xl">
-                Arri
-                <span class="text-yellow-500 font-bold">[</span>
-                RPC
-                <span class="text-yellow-300 bold-bold">]</span>
-            </div>
-            <div class="flex">
-                <HeaderLink to="/" :is-active="route.path === '/'">
-                    home
-                </HeaderLink>
-                <HeaderLink
-                    to="/docs"
-                    :is-active="route.path.startsWith('/docs')"
-                >
-                    documentation
-                </HeaderLink>
-                <HeaderLink
-                    to="/about"
-                    :is-active="route.path.startsWith('/about')"
-                >
-                    about
-                </HeaderLink>
-            </div>
-        </div>
+        <Header />
         <section class="py-20">
             <div class="container px-4">
                 <h1 class="text-6xl max-w-2xl pb-8">
