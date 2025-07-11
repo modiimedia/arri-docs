@@ -48,7 +48,7 @@ const { data: page } = await useAsyncData(route.path, async () => {
             </aside>
             <main class="flex-grow py-10">
                 <div class="container max-w-4xl px-4">
-                    {{ page?.title }}
+                    <ContentRenderer v-if="page" :value="page" />
                 </div>
             </main>
         </div>

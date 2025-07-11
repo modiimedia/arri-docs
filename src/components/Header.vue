@@ -24,7 +24,7 @@ const route = useRoute();
                     home
                 </HeaderLink>
                 <HeaderLink
-                    to="/docs"
+                    to="/docs/intro"
                     :is-active="route.path.startsWith('/docs')"
                 >
                     docs
