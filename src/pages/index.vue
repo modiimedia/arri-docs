@@ -11,20 +11,20 @@ const serverCode: Record<(typeof serverCodeOptions)[number], string> = {
     app.Start()
 }
 
-type SayHelloParams struct {
+type SayHelloInput struct {
     Name string
 }
 
-type SayHelloResponse struct {
+type SayHelloOutput struct {
     Message string
 }
 
 func SayHello(
-    params SayHelloParams,
+    input SayHelloInput,
     req arri.Request[any],
-) (SayHelloResponse, arri.RpcError) {
-    return SayHelloResponse{
-        Message: “hello “ + params.Name
+) (SayHelloOutput, arri.RpcError) {
+    return SayHelloOutput{
+        Message: “hello “ + input.Name
     }, nil
 }`,
     typescript: `import { a } from '@arrirpc/schema';
@@ -33,15 +33,15 @@ import { ArriApp, defineRpc } from '@arrirpc/server';
 const app = new ArriApp();
 
 app.rpc('sayHello', defineRpc({
-    params: a.object('SayHelloParams', {
+    input: a.object('SayHelloInput', {
         name: a.string(),
     }),
-    response: a.object('SayHelloResponse', {
+    output: a.object('SayHelloOutput', {
         message: a.string(),
     }),
-    handler({ params }) {
+    handler({ input }) {
         return {
-            message: \`hello \${params.name}\`,
+            message: \`hello \${input.name}\`,
         };
     }
 }));
@@ -59,22 +59,30 @@ const clientCodeOptions = [
     'CURL',
 ] as const;
 const clientCode: Record<(typeof clientCodeOptions)[number], string> = {
-    typescript: `const client = new Client({
-    baseUrl: 'https://example.com'
-});
-const result = await client
-    .sayHello({ name: 'John Doe' });
+    typescript: `const client = new Client({ baseUrl: 'https://example.com' });
+const result = await client.sayHello({ name: 'John Doe' });
 console.log(result);`,
-    dart: `final client = Client(
-    baseUrl: "https://example.com",
-);
+    dart: `final client = Client(baseUrl: "https://example.com");
 final result = await client.sayHello(
-    SayHelloParams(name: "John Doe"),
+    SayHelloInput(name: "John Doe"),
 );
 print(result);`,
     kotlin: '',
     swift: '',
-    rust: '',
+    rust: `let client = Client::create(
+    ArriClientConfig {
+        http_client: reqwest::Client::new(),
+        base_url: String::from("https://example.com"),
+        headers: Hashmap::new(),
+    }
+);
+let result = client.say_hello(
+    SayHelloInput{
+        name: String::from("John Doe"),
+    }
+).await;
+println!("{:?}", result);
+`,
     CURL: `curl -X POST https://example.com/say-hello \\
   --data '{"name":"John Doe"}'`,
 };
@@ -90,7 +98,9 @@ const selectedClient = ref<(typeof clientCodeOptions)[number]>('typescript');
                 <h1 class="max-w-2xl pb-4 text-6xl">
                     End-to-end type safety has never been easier
                 </h1>
-                <p class="max-w-2xl pb-8 text-xl">
+                <p
+                    class="max-w-2xl pb-8 text-xl text-gray-600 dark:text-gray-400"
+                >
                     Arri is a code-first, language agnostic, and transport
                     agnostic remote procedure call (RPC) framework for building
                     easy to use APIs.
@@ -102,11 +112,11 @@ const selectedClient = ref<(typeof clientCodeOptions)[number]>('typescript');
                 </button>
                 <div class="pt-4">
                     <div
-                        class="inline-flex items-center rounded-lg border border-gray-200 bg-gray-100 pr-2 dark:border-gray-700 dark:bg-gray-800"
+                        class="inline-flex items-center rounded-lg border border-gray-200 bg-gray-100 pr-2 dark:border-gray-800 dark:bg-gray-900"
                     >
                         <pre class="p-4">npx arri init [project-name]</pre>
                         <button
-                            class="rounded-lg bg-transparent fill-black p-2 hover:bg-gray-200 dark:fill-white dark:hover:bg-gray-700"
+                            class="rounded-lg bg-transparent fill-black p-2 hover:bg-gray-200 dark:fill-white dark:hover:bg-gray-800"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -185,7 +195,7 @@ const selectedClient = ref<(typeof clientCodeOptions)[number]>('typescript');
             <div class="container px-4">
                 <div class="max-w-4xl">
                     <h2 class="pb-4 text-3xl">Code-First API Development</h2>
-                    <p>
+                    <p class="text-gray-600 dark:text-gray-400">
                         With Arri, there are no DSLs or service schemas to
                         define. You define your API in code and get instant
                         type-safe endpoints. There are no stubs to implement or
@@ -203,7 +213,7 @@ const selectedClient = ref<(typeof clientCodeOptions)[number]>('typescript');
                                 id=""
                                 v-model="selectedServer"
                                 name=""
-                                class="mb-4 rounded border border-gray-200 bg-gray-100 px-4 py-2 dark:border-gray-700 dark:bg-gray-800"
+                                class="mb-4 rounded border border-gray-200 bg-gray-100 px-4 py-2 dark:border-gray-800 dark:bg-gray-900"
                             >
                                 <option value="go">go</option>
                                 <option value="typescript">typescript</option>
@@ -228,7 +238,7 @@ const selectedClient = ref<(typeof clientCodeOptions)[number]>('typescript');
                                 id=""
                                 v-model="selectedClient"
                                 name=""
-                                class="mb-4 rounded border border-gray-200 bg-gray-100 px-4 py-2 dark:border-gray-700 dark:bg-gray-800"
+                                class="mb-4 rounded border border-gray-200 bg-gray-100 px-4 py-2 dark:border-gray-800 dark:bg-gray-900"
                             >
                                 <option
                                     v-for="option in clientCodeOptions"

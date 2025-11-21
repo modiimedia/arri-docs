@@ -10,11 +10,11 @@ defineProps<{
 
 <template>
     <div
-        class="overflow-x-auto rounded-lg border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800"
+        class="overflow-x-auto rounded-lg border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-gray-900"
     >
         <div
             v-if="filename"
-            class="rounded-t-lg border-b border-gray-200 bg-black p-4 dark:border-gray-700"
+            class="rounded-t-lg border-b border-gray-200 bg-black p-4 dark:border-gray-800"
         >
             {{ filename }}
         </div>
