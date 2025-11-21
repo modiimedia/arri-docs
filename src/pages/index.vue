@@ -106,7 +106,7 @@ const selectedClient = ref<(typeof clientCodeOptions)[number]>('typescript');
                     easy to use APIs.
                 </p>
                 <button
-                    class="rounded-lg bg-yellow-500 px-6 py-4 text-black hover:bg-yellow-400"
+                    class="rounded-lg bg-amber-500 px-6 py-4 text-black hover:bg-amber-400"
                 >
                     Get Started
                 </button>

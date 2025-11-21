@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-    @apply bg-yellow-50 text-black dark:bg-gray-950 dark:text-white;
+    @apply bg-amber-50 text-black dark:bg-gray-950 dark:text-white;
     font-family: 'IBM Plex Mono', monospace;
 }
 

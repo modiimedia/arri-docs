@@ -15,7 +15,7 @@ defineProps<{ to: string; isActive?: boolean }>();
             </div>
             <div
                 v-if="isActive"
-                class="absolute bottom-0 left-0 right-0 z-0 h-[4px] bg-yellow-500"
+                class="absolute bottom-0 left-0 right-0 z-0 h-[4px] bg-amber-500"
             />
         </div>
     </NuxtLink>

@@ -9,9 +9,9 @@ const route = useRoute();
         <div class="flex justify-between px-4 py-4">
             <NuxtLink to="/" class="inline-flex text-3xl">
                 Arri
-                <span class="font-bold text-yellow-500">[</span>
+                <span class="font-bold text-amber-500">[</span>
                 RPC
-                <span class="font-bold text-yellow-500">]</span>
+                <span class="font-bold text-amber-500">]</span>
             </NuxtLink>
 
             <div class="flex items-center">
