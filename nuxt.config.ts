@@ -1,6 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     srcDir: 'src',
+    css: ['~/assets/css/tailwind.css'],
     compatibilityDate: '2025-05-15',
     devtools: { enabled: true },
     app: {
@@ -42,6 +43,10 @@ export default defineNuxtConfig({
         },
     },
     components: false,
+    tailwindcss: {
+        cssPath: './src/assets/css/tailwind.css',
+        configPath: './tailwind.config.ts',
+    },
     modules: [
         '@nuxt/content',
         '@nuxt/eslint',
