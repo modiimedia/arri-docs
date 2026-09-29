@@ -13,24 +13,28 @@ const handleError = () => clearError({ redirect: '/' });
 <template>
     <div class="flex min-h-screen flex-col bg-background text-zinc-100">
         <AppHeader />
-        
-        <main class="flex-grow flex items-center justify-center">
-            <div class="container text-center max-w-xl py-20">
-                <div class="inline-flex h-16 w-16 items-center justify-center rounded-lg border border-background-border bg-background-card font-mono text-3xl font-bold text-brand mb-6">
+
+        <main class="flex flex-grow items-center justify-center">
+            <div class="container max-w-xl py-20 text-center">
+                <div
+                    class="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-lg border border-background-border bg-background-card font-mono text-3xl font-bold text-brand"
+                >
                     !
                 </div>
-                
-                <h1 class="font-mono text-4xl font-bold tracking-tight text-white mb-4">
+
+                <h1
+                    class="mb-4 font-mono text-4xl font-bold tracking-tight text-white"
+                >
                     Error {{ error?.statusCode || 500 }}
                 </h1>
-                
-                <p class="text-zinc-400 font-sans mb-8">
-                    {{ error?.message || "An unexpected error occurred." }}
+
+                <p class="mb-8 font-sans text-zinc-400">
+                    {{ error?.message || 'An unexpected error occurred.' }}
                 </p>
-                
+
                 <button
                     @click="handleError"
-                    class="rounded-lg bg-brand px-6 py-3 text-sm font-semibold text-zinc-950 transition-all hover:bg-brand-light shadow-lg shadow-brand/10"
+                    class="rounded-lg bg-brand px-6 py-3 text-sm font-semibold text-zinc-950 shadow-lg shadow-brand/10 transition-all hover:bg-brand-light"
                 >
                     Back to Safety
                 </button>

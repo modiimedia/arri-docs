@@ -28,6 +28,7 @@ export default defineNuxtConfig({
         build: {
             markdown: {
                 highlight: {
+                    theme: 'one-dark-pro',
                     langs: [
                         'javascript',
                         'typescript',
@@ -37,6 +38,9 @@ export default defineNuxtConfig({
                         'kotlin',
                         'dart',
                         'python',
+                        'bash',
+                        'json',
+                        'yaml',
                     ],
                 },
             },
@@ -56,7 +60,12 @@ export default defineNuxtConfig({
     ],
     shiki: {
         defaultTheme: 'one-dark-pro',
-        bundledThemes: ['one-dark-pro', 'one-light'],
+        bundledThemes: [
+            'github-dark',
+            'github-light',
+            'one-dark-pro',
+            'one-light',
+        ],
         bundledLangs: [
             'go',
             'typescript',
@@ -69,6 +78,7 @@ export default defineNuxtConfig({
             'bash',
             'sh',
             'http',
+            'hurl',
         ],
     },
 });

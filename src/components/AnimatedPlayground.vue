@@ -252,7 +252,7 @@ suspend fun main() {
         },
         cURL: {
             filename: 'terminal',
-            lang: 'http',
+            lang: 'bash',
             code: `curl -X POST https://api.example.com/say-hello \\
   -H "Content-Type: application/json" \\
   -d '{"${prop || '_'}": "World"}'
