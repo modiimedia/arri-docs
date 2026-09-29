@@ -23,7 +23,7 @@ const errorTitle = computed(() => {
 
 // Watch for changes in code or error to apply the squiggly red line to the mismatched key
 watch(
-    () => [props.code, props.errorProp],
+    () => [props.code, props.errorProp, props.lang],
     async () => {
         await nextTick();
         if (!containerRef.value) return;
@@ -34,13 +34,20 @@ watch(
 
         // If there's an errorProp, find the Shiki span with the matching text content and underline it
         if (props.errorProp) {
-            const spans = containerRef.value.querySelectorAll('span');
-            for (const span of spans) {
-                // Strip colons, commas, quotes, braces, and whitespace to match property keys cleanly across languages
-                const cleanText =
-                    span.textContent?.trim().replace(/[:,'"{}]/g, '') || '';
-                if (cleanText === props.errorProp) {
-                    span.classList.add('squiggly-error');
+            const lines = containerRef.value.querySelectorAll('.line');
+            const assignmentRegex = new RegExp(`\\b${props.errorProp}\\s*[:=]`);
+
+            for (const line of lines) {
+                if (line.textContent && assignmentRegex.test(line.textContent)) {
+                    const spans = line.querySelectorAll('span');
+                    for (const span of spans) {
+                        // Strip colons, commas, quotes, braces, parentheses, equal signs, and brackets to match property keys cleanly across languages
+                        const cleanText =
+                            span.textContent?.trim().replace(/[:,'"{}(\)=[\]]/g, '') || '';
+                        if (cleanText === props.errorProp) {
+                            span.classList.add('squiggly-error');
+                        }
+                    }
                 }
             }
         }
