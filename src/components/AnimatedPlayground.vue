@@ -8,6 +8,8 @@ import RustLogo from '~/components/logos/RustLogo.vue';
 import SwiftLogo from '~/components/logos/SwiftLogo.vue';
 import TypscriptLogo from '~/components/logos/TypscriptLogo.vue';
 
+import type { BundledLanguage } from 'shiki';
+
 const serverCodeOptions = ['TypeScript', 'Go', 'Rust'] as const;
 type ServerLang = (typeof serverCodeOptions)[number];
 
@@ -72,8 +74,10 @@ const showSquiggly = computed(() => {
     );
 });
 
+type CodeMapping = { filename: string; lang: BundledLanguage; code: string };
+
 // Dynamic Code Generation based on Animated Properties
-const serverCode = computed(() => {
+const serverCode = computed<Record<string, CodeMapping>>(() => {
     const prop = serverProp.value;
     const propCap = serverPropCapitalized.value;
 
@@ -166,7 +170,7 @@ async fn say_hello(input: SayHelloInput) -> Result<SayHelloOutput, ArriError> {
     };
 });
 
-const clientCode = computed(() => {
+const clientCode = computed<Record<string, CodeMapping>>(() => {
     const prop = clientProp.value;
     const propCap = clientPropCapitalized.value;
 
@@ -248,7 +252,7 @@ suspend fun main() {
         },
         cURL: {
             filename: 'terminal',
-            lang: 'bash',
+            lang: 'http',
             code: `curl -X POST https://api.example.com/say-hello \\
   -H "Content-Type: application/json" \\
   -d '{"${prop || '_'}": "World"}'
@@ -423,9 +427,9 @@ onUnmounted(() => {
             </div>
 
             <CodeBlock
-                :code="serverCode[selectedServer].code"
-                :lang="serverCode[selectedServer].lang"
-                :filename="serverCode[selectedServer].filename"
+                :code="serverCode[selectedServer]!.code"
+                :lang="serverCode[selectedServer]!.lang"
+                :filename="serverCode[selectedServer]!.filename"
             />
         </div>
 
@@ -482,9 +486,9 @@ onUnmounted(() => {
             </div>
 
             <CodeBlock
-                :code="clientCode[selectedClient].code"
-                :lang="clientCode[selectedClient].lang"
-                :filename="clientCode[selectedClient].filename"
+                :code="clientCode[selectedClient]!.code"
+                :lang="clientCode[selectedClient]!.lang"
+                :filename="clientCode[selectedClient]!.filename"
                 :error="clientError"
                 :error-prop="showSquiggly ? clientProp : undefined"
             />
