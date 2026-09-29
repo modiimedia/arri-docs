@@ -2,11 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-    @apply bg-yellow-50 text-black dark:bg-gray-950 dark:text-white;
-    font-family: 'IBM Plex Mono', monospace;
+@layer base {
+    body {
+        @apply bg-background text-zinc-100 antialiased font-sans selection:bg-brand/30 selection:text-white;
+    }
+
+    /* Custom scrollbar styles */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        @apply bg-background;
+    }
+    ::-webkit-scrollbar-thumb {
+        @apply bg-[#1f1f23] rounded-full hover:bg-zinc-700 transition-colors;
+    }
 }
 
 .container {
-    @apply mx-auto;
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+}
+
+/* Ensure code highlighting wraps elegantly */
+.shiki {
+    @apply text-sm leading-relaxed overflow-x-auto;
+    background-color: transparent !important;
+}
+
+/* Custom styles for tailwind typography in our dark mode docs */
+.prose {
+    --tw-prose-body: theme('colors.zinc.300');
+    --tw-prose-headings: theme('colors.white');
+    --tw-prose-lead: theme('colors.zinc.400');
+    --tw-prose-links: theme('colors.brand.DEFAULT');
+    --tw-prose-bold: theme('colors.white');
+    --tw-prose-counters: theme('colors.zinc.500');
+    --tw-prose-bullets: theme('colors.zinc.600');
+    --tw-prose-hr: theme('colors.background.border');
+    --tw-prose-quotes: theme('colors.zinc.100');
+    --tw-prose-quote-borders: theme('colors.brand.DEFAULT');
+    --tw-prose-captions: theme('colors.zinc.400');
+    --tw-prose-code: theme('colors.brand.light');
+    --tw-prose-pre-code: theme('colors.zinc.200');
+    --tw-prose-pre-bg: theme('colors.background.card');
+    --tw-prose-th-borders: theme('colors.background.border');
+    --tw-prose-td-borders: theme('colors.background.border');
 }

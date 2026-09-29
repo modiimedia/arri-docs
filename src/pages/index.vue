@@ -1,33 +1,26 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import CodeBlock from '~/components/CodeBlock.vue';
-import Header from '~/components/Header.vue';
+import HeroGraphic from '~/components/HeroGraphic.vue';
+import AnimatedPlayground from '~/components/AnimatedPlayground.vue';
 
-const serverCodeOptions = ['go', 'typescript'] as const;
+definePageMeta({
+    layout: 'default',
+});
 
-const serverCode: Record<(typeof serverCodeOptions)[number], string> = {
-    go: `func main() {
-    app := arri.NewApp[any]()
-    arri.Rpc(&app, SayHello, arri.RpcOptions{})
-    app.Start()
-}
+const serverCodeOptions = ['TypeScript', 'Go', 'Rust'] as const;
+type ServerLang = (typeof serverCodeOptions)[number];
 
-type SayHelloInput struct {
-    Name string
-}
+const serverLangMap: Record<ServerLang, string> = {
+    TypeScript: 'typescript',
+    Go: 'go',
+    Rust: 'rust',
+};
 
-type SayHelloOutput struct {
-    Message string
-}
-
-func SayHello(
-    input SayHelloInput,
-    req arri.Request[any],
-) (SayHelloOutput, arri.RpcError) {
-    return SayHelloOutput{
-        Message: “hello “ + input.Name
-    }, nil
-}`,
-    typescript: `import { a } from '@arrirpc/schema';
+const serverCode: Record<ServerLang, { code: string; filename: string }> = {
+    TypeScript: {
+        filename: 'server.ts',
+        code: `import { a } from '@arrirpc/schema';
 import { ArriApp, defineRpc } from '@arrirpc/server';
 
 const app = new ArriApp();
@@ -41,224 +34,391 @@ app.rpc('sayHello', defineRpc({
     }),
     handler({ input }) {
         return {
-            message: \`hello \${input.name}\`,
+            message: \`Hello \${input.name}!\`,
         };
     }
 }));
 
 export default app;`,
+    },
+    Go: {
+        filename: 'main.go',
+        code: `package main
+
+import (
+    "github.com/modii-dev/arri/languages/go/go-server"
+)
+
+type SayHelloInput struct {
+    Name string \`json:"name"\`
+}
+
+type SayHelloOutput struct {
+    Message string \`json:"message"\`
+}
+
+func main() {
+    app := arri.NewApp[any]()
+    
+    arri.Rpc(&app, SayHello, arri.RpcOptions{})
+    
+    app.Start()
+}
+
+func SayHello(
+    input SayHelloInput,
+    req arri.Request[any],
+) (SayHelloOutput, arri.RpcError) {
+    return SayHelloOutput{
+        Message: "Hello " + input.Name + "!",
+    }, nil
+}`,
+    },
+    Rust: {
+        filename: 'main.rs',
+        code: `use arri_server::prelude::*;
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize, ArriSchema)]
+struct SayHelloInput {
+    name: String,
+}
+
+#[derive(Serialize, Deserialize, ArriSchema)]
+struct SayHelloOutput {
+    message: String,
+}
+
+#[tokio::main]
+async fn main() {
+    let mut app = ArriApp::new();
+
+    app.rpc("sayHello", say_hello);
+
+    app.start().await.unwrap();
+}
+
+async fn say_hello(input: SayHelloInput) -> Result<SayHelloOutput, ArriError> {
+    Ok(SayHelloOutput {
+        message: format!("Hello {}!", input.name),
+    })
+}`,
+    },
 };
-const selectedServer = ref<(typeof serverCodeOptions)[number]>('go');
 
 const clientCodeOptions = [
-    'typescript',
-    'dart',
-    'kotlin',
-    'swift',
-    'rust',
-    'CURL',
+    'TypeScript',
+    'Dart',
+    'Rust',
+    'Swift',
+    'Kotlin',
+    'cURL',
 ] as const;
-const clientCode: Record<(typeof clientCodeOptions)[number], string> = {
-    typescript: `const client = new Client({ baseUrl: 'https://example.com' });
-const result = await client.sayHello({ name: 'John Doe' });
-console.log(result);`,
-    dart: `final client = Client(baseUrl: "https://example.com");
-final result = await client.sayHello(
-    SayHelloInput(name: "John Doe"),
-);
-print(result);`,
-    kotlin: '',
-    swift: '',
-    rust: `let client = Client::create(
-    ArriClientConfig {
-        http_client: reqwest::Client::new(),
-        base_url: String::from("https://example.com"),
-        headers: Hashmap::new(),
-    }
-);
-let result = client.say_hello(
-    SayHelloInput{
-        name: String::from("John Doe"),
-    }
-).await;
-println!("{:?}", result);
-`,
-    CURL: `curl -X POST https://example.com/say-hello \\
-  --data '{"name":"John Doe"}'`,
+type ClientLang = (typeof clientCodeOptions)[number];
+
+const clientCode: Record<ClientLang, { code: string; filename: string; lang: string }> = {
+    TypeScript: {
+        filename: 'client.ts',
+        lang: 'typescript',
+        code: `import { Client } from './generated-client';
+
+const client = new Client({ 
+    baseUrl: 'https://api.example.com' 
+});
+
+const response = await client.sayHello({ name: 'World' });
+console.log(response.message); // "Hello World!"`,
+    },
+    Dart: {
+        filename: 'client.dart',
+        lang: 'dart',
+        code: `import 'generated_client.dart';
+
+void main() async {
+  final client = Client(baseUrl: 'https://api.example.com');
+  
+  final response = await client.sayHello(
+    SayHelloInput(name: 'World'),
+  );
+  print(response.message); // "Hello World!"
+}`,
+    },
+    Rust: {
+        filename: 'client.rs',
+        lang: 'rust',
+        code: `use generated_client::{Client, ArriClientConfig, SayHelloInput};
+
+#[tokio::main]
+async fn main() {
+    let client = Client::new(ArriClientConfig {
+        base_url: "https://api.example.com".to_string(),
+        ..Default::default()
+    });
+    
+    let response = client.say_hello(SayHelloInput {
+        name: "World".to_string(),
+    }).await.unwrap();
+    
+    println!("{}", response.message); // "Hello World!"
+}`,
+    },
+    Swift: {
+        filename: 'client.swift',
+        lang: 'swift',
+        code: `import Foundation
+import GeneratedClient
+
+let client = Client(baseUrl: "https://api.example.com")
+
+let response = try await client.sayHello(
+    input: SayHelloInput(name: "World")
+)
+print(response.message) // "Hello World!"`,
+    },
+    Kotlin: {
+        filename: 'client.kt',
+        lang: 'kotlin',
+        code: `import com.example.generated.Client
+import com.example.generated.models.SayHelloInput
+
+suspend fun main() {
+    val client = Client(baseUrl = "https://api.example.com")
+    
+    val response = client.sayHello(
+        SayHelloInput(name = "World")
+    )
+    println(response.message) // "Hello World!"
+}`,
+    },
+    cURL: {
+        filename: 'terminal',
+        lang: 'bash',
+        code: `curl -X POST https://api.example.com/say-hello \\
+  -H "Content-Type: application/json" \\
+  -d '{"name": "World"}'
+  
+# Response:
+# {"message":"Hello World!"}`,
+    },
 };
 
-const selectedClient = ref<(typeof clientCodeOptions)[number]>('typescript');
+const selectedServer = ref<ServerLang>('TypeScript');
+const selectedClient = ref<ClientLang>('TypeScript');
+
+const initCopied = ref(false);
+const initCommand = 'npx arri init my-arri-app';
+
+async function copyInitCommand() {
+    try {
+        await navigator.clipboard.writeText(initCommand);
+        initCopied.value = true;
+        setTimeout(() => {
+            initCopied.value = false;
+        }, 2000);
+    } catch (err) {
+        console.error('Failed to copy text: ', err);
+    }
+}
 </script>
 
 <template>
     <div>
-        <Header />
-        <section class="py-20">
-            <div class="container px-4">
-                <h1 class="max-w-2xl pb-4 text-6xl">
-                    End-to-end type safety has never been easier
-                </h1>
-                <p
-                    class="max-w-2xl pb-8 text-xl text-gray-600 dark:text-gray-400"
-                >
-                    Arri is a code-first, language agnostic, and transport
-                    agnostic remote procedure call (RPC) framework for building
-                    easy to use APIs.
-                </p>
-                <button
-                    class="rounded-lg bg-yellow-500 px-6 py-4 text-black hover:bg-yellow-400"
-                >
-                    Get Started
-                </button>
-                <div class="pt-4">
-                    <div
-                        class="inline-flex items-center rounded-lg border border-gray-200 bg-gray-100 pr-2 dark:border-gray-800 dark:bg-gray-900"
-                    >
-                        <pre class="p-4">npx arri init [project-name]</pre>
-                        <button
-                            class="rounded-lg bg-transparent fill-black p-2 hover:bg-gray-200 dark:fill-white dark:hover:bg-gray-800"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                height="24px"
-                                viewBox="0 -960 960 960"
-                                width="24px"
-                                fill="inherit"
+        <!-- Hero Section -->
+        <section class="relative overflow-hidden py-24 sm:py-32 border-b border-background-border">
+            <div class="container relative z-10">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-12">
+                    <div class="max-w-3xl flex-1">
+                        <div class="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-background-card px-3 py-1 text-xs text-zinc-400 mb-6">
+                            <span class="flex h-2 w-2 rounded-full bg-brand animate-pulse"></span>
+                            <span>Active development towards v1.0</span>
+                        </div>
+                        
+                        <h1 class="font-mono text-5xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl">
+                            End-to-end <span class="text-brand">type safety</span> without DSLs.
+                        </h1>
+                        
+                        <p class="mt-6 text-lg sm:text-xl text-zinc-400 leading-relaxed font-sans">
+                            Arri is a code-first, language-agnostic RPC framework. Define your API in code (TypeScript, Go, or Rust) and instantly get high-performance, type-safe clients for your frontend and mobile apps.
+                        </p>
+                        
+                        <div class="mt-10 flex flex-wrap gap-4">
+                            <NuxtLink
+                                to="/docs/1.getting-started/1.introduction-to-arri"
+                                class="rounded-lg bg-brand px-6 py-3.5 text-sm font-semibold text-zinc-950 transition-all hover:bg-brand-light hover:scale-[1.02] shadow-lg shadow-brand/10"
                             >
-                                <path
-                                    d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"
-                                />
-                            </svg>
-                        </button>
+                                Get Started
+                            </NuxtLink>
+                            
+                            <a
+                                href="https://github.com/modii-dev/arri"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="rounded-lg border border-background-border bg-background-card px-6 py-3.5 text-sm font-semibold text-white transition-all hover:bg-background hover:text-brand"
+                            >
+                                View on GitHub
+                            </a>
+                        </div>
+
+                        <!-- Init Command block -->
+                        <div class="mt-10">
+                            <div class="inline-flex items-center rounded-lg border border-background-border bg-background-card pr-2 font-mono text-xs text-zinc-300">
+                                <span class="p-3 text-zinc-500">$</span>
+                                <span class="py-3 pr-4 font-semibold text-zinc-200">{{ initCommand }}</span>
+                                <button
+                                    @click="copyInitCommand"
+                                    class="rounded bg-background border border-background-border p-2 text-zinc-400 hover:text-brand transition-colors"
+                                    :aria-label="initCopied ? 'Copied!' : 'Copy command'"
+                                >
+                                    <svg v-if="initCopied" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-brand" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-center lg:justify-end flex-shrink-0 w-full lg:w-auto">
+                        <HeroGraphic />
                     </div>
                 </div>
             </div>
         </section>
-        <!-- <section class="py-20">
-            <div class="container px-4">
-                <h2 class="text-3xl pb-4">Use Your Favorite Languages</h2>
-                <p>
-                    Arri RPC can be implemented in any language for both clients
-                    and servers. Use one of our official implemenations or make
-                    your own.
-                </p>
-                <div class="flex" />
-            </div>
-        </section> -->
-        <!-- <section class="pt-0 pb-20">
-            <div class="container px-4">
-                <div class="flex flex-wrap -m-4">
-                    <div class="w-1/3 p-4">
-                        <div
-                            class="dark:bg-gray-800 border dark:border-gray-700 bg-gray-100 border-gray-200 rounded-lg p-4"
-                        >
-                            <div class="font-bold text-lg">Easy To Use</div>
-                            <div>
-                                Arri comes with first party support for a number
-                                of languages with the ability to add custom
-                                language implementations as needed.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="w-1/3 p-4">
-                        <div
-                            class="dark:bg-gray-800 border dark:border-gray-700 bg-gray-100 border-gray-200 rounded-lg p-4"
-                        >
-                            <div class="font-bold text-lg">
-                                Bring Your Favorite Language
-                            </div>
-                            <div>
-                                Arri comes with first party support for a number
-                                of languages with the ability to add custom
-                                language implementations as needed.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="w-1/3 p-4">
-                        <div
-                            class="dark:bg-gray-800 border dark:border-gray-700 bg-gray-100 border-gray-200 rounded-lg p-4"
-                        >
-                            <div class="font-bold text-lg">
-                                Incrementally Adoptable and Extensible
-                            </div>
-                            <div>
-                                Since Arri works with HTTP and Websockets it can
-                                easily be embedded it into existing
-                                applications.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section> -->
-        <section class="py-20">
-            <div class="container px-4">
-                <div class="max-w-4xl">
-                    <h2 class="pb-4 text-3xl">Code-First API Development</h2>
-                    <p class="text-gray-600 dark:text-gray-400">
-                        With Arri, there are no DSLs or service schemas to
-                        define. You define your API in code and get instant
-                        type-safe endpoints. There are no stubs to implement or
-                        additional codegen steps. This makes your server code
-                        the source of truth for all of your types and
-                        procedures.
+
+        <!-- Dynamic Code Playground Section -->
+        <section class="py-24 bg-background">
+            <div class="container">
+                <div class="max-w-3xl mb-12">
+                    <h2 class="font-mono text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                        Code-First Development. Instant Generated Clients.
+                    </h2>
+                    <p class="mt-4 text-zinc-400 leading-relaxed">
+                        With Arri RPC, there are no intermediate interface files, protobuf definitions, or separate API specifications. Define your server procedures directly in code, and the CLI compiles them into highly optimized clients with zero build overhead.
                     </p>
                 </div>
 
-                <div class="flex flex-col pt-10 lg:flex-row">
-                    <div class="pb-4 lg:w-1/2 lg:pb-0 lg:pr-4">
-                        <div class="flex justify-between">
-                            <h3 class="pb-4 pr-4 text-2xl">Server</h3>
-                            <select
-                                id=""
-                                v-model="selectedServer"
-                                name=""
-                                class="mb-4 rounded border border-gray-200 bg-gray-100 px-4 py-2 dark:border-gray-800 dark:bg-gray-900"
-                            >
-                                <option value="go">go</option>
-                                <option value="typescript">typescript</option>
-                            </select>
-                        </div>
+                <AnimatedPlayground />
+            </div>
+        </section>
 
-                        <CodeBlock
-                            v-for="val in serverCodeOptions"
-                            :key="val"
-                            :lang="val"
-                            :code="serverCode[val]"
-                            :class="{
-                                hidden: val !== selectedServer,
-                            }"
-                        />
+        <!-- Minimal Benefits Grid -->
+        <section class="py-24 bg-background-card border-t border-b border-background-border">
+            <div class="container">
+                <div class="grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
+                    <!-- Feature 1 -->
+                    <div class="space-y-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-background-border bg-background font-mono text-lg font-bold text-brand">
+                            /
+                        </div>
+                        <h3 class="font-mono text-lg font-semibold text-white">No DSLs Required</h3>
+                        <p class="text-sm text-zinc-400 leading-relaxed">
+                            No GraphQL, Protocol Buffers, or OpenAPI specs to manually maintain. Define your schemas and endpoints natively in standard server code.
+                        </p>
                     </div>
 
-                    <div class="h-full pt-4 lg:w-1/2 lg:pl-4 lg:pt-0">
-                        <div class="flex justify-between">
-                            <h3 class="pb-4 pr-4 text-2xl">Client</h3>
-                            <select
-                                id=""
-                                v-model="selectedClient"
-                                name=""
-                                class="mb-4 rounded border border-gray-200 bg-gray-100 px-4 py-2 dark:border-gray-800 dark:bg-gray-900"
-                            >
-                                <option
-                                    v-for="option in clientCodeOptions"
-                                    :key="`client_${option}`"
-                                    :value="option"
-                                >
-                                    {{ option }}
-                                </option>
-                            </select>
+                    <!-- Feature 2 -->
+                    <div class="space-y-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-background-border bg-background font-mono text-lg font-bold text-brand">
+                            *
                         </div>
+                        <h3 class="font-mono text-lg font-semibold text-white">High-Performance Validation</h3>
+                        <p class="text-sm text-zinc-400 leading-relaxed">
+                            Uses <code class="text-brand">@arrirpc/schema</code> under the hood—a validation engine compiled to raw, optimized JTD serializations.
+                        </p>
+                    </div>
 
-                        <CodeBlock
-                            v-for="val in clientCodeOptions"
-                            :key="`client_code_${val}`"
-                            :code="clientCode[val] ?? ''"
-                            :lang="val === 'CURL' ? 'sh' : val"
-                            :class="{
-                                hidden: val !== selectedClient,
-                            }"
-                        />
+                    <!-- Feature 3 -->
+                    <div class="space-y-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-background-border bg-background font-mono text-lg font-bold text-brand">
+                            &gt;
+                        </div>
+                        <h3 class="font-mono text-lg font-semibold text-white">Language-Agnostic</h3>
+                        <p class="text-sm text-zinc-400 leading-relaxed">
+                            First-class client generators for TypeScript, Go, Rust, Dart, Kotlin, and Swift. Your clients stay instantly in sync.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Server Languages Section -->
+        <section class="py-24 bg-background">
+            <div class="container">
+                <div class="max-w-3xl mb-16">
+                    <h2 class="font-mono text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                        Use the Language You Love
+                    </h2>
+                    <p class="mt-4 text-zinc-400 leading-relaxed font-sans">
+                        Arri supports first-class server-side implementations in your favorite ecosystems, preserving native idioms and absolute compiler-level performance in each language.
+                    </p>
+                </div>
+
+                <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+                    <!-- TypeScript Card -->
+                    <div class="flex flex-col justify-between rounded-lg border border-background-border bg-background-card p-6 hover:border-brand/30 transition-all group">
+                        <div>
+                            <div class="font-mono text-xs font-bold text-brand uppercase tracking-widest mb-4">TypeScript</div>
+                            <h3 class="text-xl font-bold text-white mb-2 font-mono">@arrirpc/server</h3>
+                            <p class="text-sm text-zinc-400 leading-relaxed mb-6 font-sans">
+                                Fully integrated with the JS ecosystem. Features rapid hot-reloads, typebox-adapter compatibility, and ultra-high JTD serialization speeds.
+                            </p>
+                        </div>
+                        <NuxtLink
+                            to="/docs/server-languages/typescript"
+                            class="text-xs font-mono font-bold text-zinc-300 hover:text-brand transition-colors inline-flex items-center gap-1"
+                        >
+                            Read TS Guide &rarr;
+                        </NuxtLink>
+                    </div>
+
+                    <!-- Go Card -->
+                    <div class="flex flex-col justify-between rounded-lg border border-background-border bg-background-card p-6 hover:border-brand/30 transition-all group">
+                        <div>
+                            <div class="font-mono text-xs font-bold text-brand uppercase tracking-widest mb-4">Go (Golang)</div>
+                            <h3 class="text-xl font-bold text-white mb-2 font-mono">go-server</h3>
+                            <p class="text-sm text-zinc-400 leading-relaxed mb-6 font-sans">
+                                Microsecond performance utilizing Go structs. Auto-generates type-safe schemas at boot-time with zero runtime reflection overhead.
+                            </p>
+                        </div>
+                        <NuxtLink
+                            to="/docs/server-languages/go"
+                            class="text-xs font-mono font-bold text-zinc-300 hover:text-brand transition-colors inline-flex items-center gap-1"
+                        >
+                            Read Go Guide &rarr;
+                        </NuxtLink>
+                    </div>
+
+                    <!-- Rust Card -->
+                    <div class="flex flex-col justify-between rounded-lg border border-background-border bg-background-card p-6 hover:border-brand/30 transition-all group">
+                        <div>
+                            <div class="font-mono text-xs font-bold text-brand uppercase tracking-widest mb-4">Rust</div>
+                            <h3 class="text-xl font-bold text-white mb-2 font-mono">arri-server</h3>
+                            <p class="text-sm text-zinc-400 leading-relaxed mb-6 font-sans">
+                                Unparalleled speed, memory safety, and compilation checks. Leverage native Rust proc-macros to define seamless schemas.
+                            </p>
+                        </div>
+                        <span class="text-xs font-mono font-bold text-zinc-500 inline-flex items-center gap-1">
+                            Rust Guide Coming Soon
+                        </span>
+                    </div>
+
+                    <!-- Bring Your Own Card -->
+                    <div class="flex flex-col justify-between rounded-lg border border-dashed border-background-border bg-background/30 p-6 hover:border-brand/30 transition-all group">
+                        <div>
+                            <div class="font-mono text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Add Yours</div>
+                            <h3 class="text-xl font-bold text-white mb-2 font-mono">Custom Server</h3>
+                            <p class="text-sm text-zinc-500 leading-relaxed mb-6 font-sans">
+                                Want to use Python, Dart, Zig, or C++? Integrate your custom framework easily using our open spec definition guide.
+                            </p>
+                        </div>
+                        <NuxtLink
+                            to="/docs/server-languages/bring-your-own"
+                            class="rounded bg-background-card border border-background-border px-3 py-2 text-center text-xs font-mono font-bold text-brand hover:bg-background hover:text-brand-light transition-colors"
+                        >
+                            Bring Your Own &rarr;
+                        </NuxtLink>
                     </div>
                 </div>
             </div>
