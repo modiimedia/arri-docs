@@ -1,0 +1,30 @@
+<script lang="ts" setup>
+defineProps<{ width?: number; height?: number }>();
+</script>
+
+<template>
+    <svg
+        :viewBox="`0 0 ${width ?? 20.554} ${height ?? 20.543}`"
+        xmlns="http://www.w3.org/2000/svg"
+    >
+        <radialGradient
+            id="a"
+            cx="22.432"
+            cy="3.493"
+            r="21.679"
+            gradientTransform="matrix(1.0856 0 0 1.0856 -4.4842 -2.9511)"
+            gradientUnits="userSpaceOnUse"
+        >
+            <stop stop-color="#e44857" offset=".003" />
+            <stop stop-color="#c711e1" offset=".469" />
+            <stop stop-color="#7f52ff" offset="1" />
+        </radialGradient>
+        <path
+            d="m20.554 20.543h-20.554v-20.543h20.554l-10.489 10.119z"
+            fill="url(#a)"
+            stroke-width="1.0858"
+        />
+    </svg>
+</template>
+
+<style lang="scss" scoped></style>

@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import CodeBlock from '~/components/CodeBlock.vue';
+import DartLogo from '~/components/logos/DartLogo.vue';
+import GoLogo from '~/components/logos/GoLogo.vue';
+import KotlinLogo from '~/components/logos/KotlinLogo.vue';
+import RustLogo from '~/components/logos/RustLogo.vue';
+import SwiftLogo from '~/components/logos/SwiftLogo.vue';
+import TypscriptLogo from '~/components/logos/TypscriptLogo.vue';
 
 const serverCodeOptions = ['TypeScript', 'Go', 'Rust'] as const;
 type ServerLang = (typeof serverCodeOptions)[number];
@@ -382,24 +388,36 @@ onUnmounted(() => {
         <!-- Server Code Panel -->
         <div class="space-y-4">
             <div class="flex items-center justify-between">
-                <h3 class="font-mono text-sm font-bold uppercase tracking-wider text-zinc-500">
+                <h3
+                    class="font-mono text-sm font-bold uppercase tracking-wider text-zinc-500"
+                >
                     1. Define Server API
                 </h3>
-                
+
                 <!-- Language selector -->
-                <div class="flex gap-1.5 p-1 rounded-lg border border-background-border bg-background-card text-xs">
+                <div
+                    class="flex gap-1.5 rounded-lg border border-background-border bg-background-card p-1 text-xs"
+                >
                     <button
                         v-for="opt in serverCodeOptions"
                         :key="opt"
-                        @click="selectedServer = opt"
-                        class="px-2.5 py-1 rounded font-mono font-semibold transition-colors font-medium"
+                        class="inline-flex items-center justify-center rounded border p-1.5 transition-all duration-200"
                         :class="[
                             selectedServer === opt
-                                ? 'bg-background text-brand border border-background-border shadow-sm'
-                                : 'text-zinc-400 hover:text-white'
+                                ? 'border-background-border bg-background text-brand shadow-sm'
+                                : 'border-transparent text-zinc-400 hover:text-white',
                         ]"
+                        :title="opt"
+                        @click="selectedServer = opt"
                     >
-                        {{ opt }}
+                        <!-- Custom Component Logos for Server -->
+                        <span class="sr-only">{{ opt }}</span>
+                        <TypscriptLogo
+                            v-if="opt === 'TypeScript'"
+                            class="h-4 w-4"
+                        />
+                        <GoLogo v-else-if="opt === 'Go'" class="h-4 w-5" />
+                        <RustLogo v-else-if="opt === 'Rust'" class="h-4 w-4" />
                     </button>
                 </div>
             </div>
@@ -414,24 +432,51 @@ onUnmounted(() => {
         <!-- Client Code Panel -->
         <div class="space-y-4">
             <div class="flex items-center justify-between">
-                <h3 class="font-mono text-sm font-bold uppercase tracking-wider text-zinc-500">
+                <h3
+                    class="font-mono text-sm font-bold uppercase tracking-wider text-zinc-500"
+                >
                     2. Generated Clients Callers
                 </h3>
 
                 <!-- Client selector -->
-                <div class="flex flex-wrap gap-1 p-1 rounded-lg border border-background-border bg-background-card text-xs">
+                <div
+                    class="flex flex-wrap gap-1 rounded-lg border border-background-border bg-background-card p-1 text-xs"
+                >
                     <button
                         v-for="opt in clientCodeOptions"
                         :key="opt"
-                        @click="selectedClient = opt"
-                        class="px-2 py-0.5 rounded font-mono font-semibold transition-colors font-medium"
+                        class="inline-flex items-center justify-center rounded border p-1.5 transition-all duration-200"
                         :class="[
                             selectedClient === opt
-                                ? 'bg-background text-brand border border-background-border shadow-sm'
-                                : 'text-zinc-400 hover:text-white'
+                                ? 'border-background-border bg-background text-brand shadow-sm'
+                                : 'border-transparent text-zinc-400 hover:text-white',
                         ]"
+                        :title="opt"
+                        @click="selectedClient = opt"
                     >
-                        {{ opt }}
+                        <!-- Custom Component Logos for Client -->
+                        <span class="sr-only">{{ opt }}</span>
+                        <TypscriptLogo
+                            v-if="opt === 'TypeScript'"
+                            class="h-4 w-4"
+                        />
+                        <DartLogo v-else-if="opt === 'Dart'" class="h-4 w-4" />
+                        <RustLogo v-else-if="opt === 'Rust'" class="h-4 w-4" />
+                        <SwiftLogo
+                            v-else-if="opt === 'Swift'"
+                            class="h-4 w-4"
+                        />
+                        <KotlinLogo
+                            v-else-if="opt === 'Kotlin'"
+                            class="h-4 w-4"
+                        />
+                        <!-- cURL Tag (Text only) -->
+                        <span
+                            v-else-if="opt === 'cURL'"
+                            class="px-1.5 py-0.5 font-mono text-xs font-bold"
+                        >
+                            cURL
+                        </span>
                     </button>
                 </div>
             </div>
