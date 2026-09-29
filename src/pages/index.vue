@@ -306,7 +306,7 @@ async function copyInitCommand() {
         <!-- Minimal Benefits Grid -->
         <section class="py-24 bg-background-card border-t border-b border-background-border">
             <div class="container">
-                <div class="grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
                     <!-- Feature 1 -->
                     <div class="space-y-3">
                         <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-background-border bg-background font-mono text-lg font-bold text-brand">
@@ -337,6 +337,17 @@ async function copyInitCommand() {
                         <h3 class="font-mono text-lg font-semibold text-white">Language-Agnostic</h3>
                         <p class="text-sm text-zinc-400 leading-relaxed">
                             First-class client generators for TypeScript, Go, Rust, Dart, Kotlin, and Swift. Your clients stay instantly in sync.
+                        </p>
+                    </div>
+
+                    <!-- Feature 4 -->
+                    <div class="space-y-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-background-border bg-background font-mono text-lg font-bold text-brand">
+                            ~
+                        </div>
+                        <h3 class="font-mono text-lg font-semibold text-white">Transport Agnostic</h3>
+                        <p class="text-sm text-zinc-400 leading-relaxed">
+                            Serve your APIs natively over standard <code class="text-brand">HTTP</code>, persistent <code class="text-brand">WebSockets</code>, or high-throughput <code class="text-brand">NATS</code> message brokers.
                         </p>
                     </div>
                 </div>
