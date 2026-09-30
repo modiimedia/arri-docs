@@ -234,7 +234,7 @@ async function copyInitCommand() {
                 <div
                     class="flex flex-col gap-12 lg:flex-row lg:items-center lg:justify-between"
                 >
-                    <div class="max-w-3xl flex-1">
+                    <div class="max-w-3xl">
                         <div
                             class="mb-6 inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-background-card px-3 py-1 text-xs text-zinc-400"
                         >
@@ -327,12 +327,6 @@ async function copyInitCommand() {
                                 </button>
                             </div>
                         </div>
-                    </div>
-
-                    <div
-                        class="flex w-full flex-shrink-0 justify-center lg:w-auto lg:justify-end"
-                    >
-                        <HeroGraphic />
                     </div>
                 </div>
             </div>

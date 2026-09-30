@@ -390,12 +390,12 @@ onUnmounted(() => {
 <template>
     <div class="relative grid gap-8 lg:grid-cols-2">
         <!-- Server Code Panel -->
-        <div class="space-y-4">
+        <div class="min-w-0 space-y-4">
             <div class="flex items-center justify-between">
                 <h3
                     class="font-mono text-sm font-bold uppercase tracking-wider text-zinc-500"
                 >
-                    1. Define Server API
+                    Server Code
                 </h3>
 
                 <!-- Language selector -->
@@ -434,12 +434,12 @@ onUnmounted(() => {
         </div>
 
         <!-- Client Code Panel -->
-        <div class="space-y-4">
+        <div class="min-w-0 space-y-4">
             <div class="flex items-center justify-between">
                 <h3
                     class="font-mono text-sm font-bold uppercase tracking-wider text-zinc-500"
                 >
-                    2. Generated Clients Callers
+                    Client Code
                 </h3>
 
                 <!-- Client selector -->

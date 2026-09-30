@@ -123,7 +123,7 @@ const categorizedDocs = computed(() => {
             </aside>
 
             <!-- Main Content Area -->
-            <main class="flex-grow py-8 lg:pl-10 xl:pr-10">
+            <main class="min-w-0 flex-grow py-8 lg:pl-10 xl:pr-10">
                 <div class="mx-auto max-w-3xl">
                     <slot />
                 </div>
